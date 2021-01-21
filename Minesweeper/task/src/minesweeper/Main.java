@@ -1,5 +1,6 @@
 package minesweeper;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.Scanner;
@@ -29,7 +30,6 @@ public class Main {
 class Field {
     public static final int SIZE = 9;
     private static final Random rnd = new Random();
-
     private final BitSet field = new BitSet(SIZE * SIZE);
 
     Field(final int mines) {
@@ -44,10 +44,28 @@ class Field {
         }
     }
 
+    public boolean isMine(final int x, final int y) {
+        return x >= 0 && x < SIZE && y >= 0 && y < SIZE && field.get(y * SIZE + x);
+    }
+
+    public String countMines(int index) {
+        final var x = index % SIZE;
+        final var y = index / SIZE;
+        final var count = Arrays
+                .stream(new int[][] {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}})
+                .filter(offset -> isMine(x + offset[0], y + offset[1]))
+                .count();
+        return count == 0 ? "." : String.valueOf(count);
+    }
+
+    private String getSymbol(int index) {
+        return (field.get(index) ? "X" : countMines(index)) + (index % SIZE == SIZE - 1 ? "\n" : "");
+    }
+
     @Override
     public String toString() {
         return IntStream.range(0, SIZE * SIZE)
-                .mapToObj(i -> (field.get(i) ? "X" : ".") + (i % SIZE == SIZE - 1 ? "\n" : ""))
+                .mapToObj(this::getSymbol)
                 .collect(Collectors.joining());
     }
 }
