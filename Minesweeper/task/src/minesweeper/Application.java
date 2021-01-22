@@ -6,16 +6,10 @@ public class Application implements Runnable {
 
     @Override
     public void run() {
+        final var ui = new UI();
         final var scanner = new Scanner(System.in);
 
-        System.out.print("How many mines do you want on the field?");
-        final var minesCount = scanner.nextInt();
-
-        if (minesCount < Field.MIN_MINES || minesCount > Field.MAX_MINES) {
-            System.out.printf("The mine count should be from %d to %d%n", Field.MIN_MINES, Field.MAX_MINES);
-            return;
-        }
-        final var game = new Field(minesCount);
+        final var game = new Field(ui.askMinesNumber());
         System.out.println(game);
 
         while (!game.isOver()) {
