@@ -14,7 +14,8 @@ public class Field {
     private static final Logger log = Logger.getLogger(Field.class.getName());
 
     private static final int STATE_UNEXPLORED = -1;
-    private static final int STATE_BOMB = -2;
+    private static final int STATE_MARK = -2;
+    private static final int STATE_MINE = -3;
     private static final int STATE_FREE = 0;
     private static final int[][] OFFSETS =
             new int[][]{{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
@@ -57,6 +58,14 @@ public class Field {
         return Character.isDigit(numbers[index]);
     }
 
+    public boolean isMine(int index) {
+        return mines.get(index);
+    }
+
+    public void markMines() {
+        mines.stream().forEach(i -> state[i] = STATE_MINE);
+    }
+
     public void setMark(int index) {
         if (suggestions.get(index)) {
             suggestions.clear(index);
@@ -80,8 +89,10 @@ public class Field {
         switch (state[index]) {
             case STATE_UNEXPLORED:
                 return '.';
-            case STATE_BOMB:
+            case STATE_MARK:
                 return '*';
+            case STATE_MINE:
+                return 'X';
             case STATE_FREE:
                 return '/';
             default:
