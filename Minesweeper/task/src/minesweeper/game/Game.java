@@ -31,13 +31,16 @@ public class Game {
         System.out.println(board);
 
         final var suggestion = askSuggestion();
+
         if (suggestion.getType() == Suggestion.Type.MINE) {
             board.mark(suggestion.getIndex());
         } else {
             if (mines.get(suggestion.getIndex())) {
                 mines.stream().forEach(board::showMine);
+            } else {
+//                neighbors(suggestion.getIndex()).forEach(System.out::println);
+                explore(suggestion.getIndex());
             }
-            explore(suggestion.getIndex());
         }
 
         System.out.println(board);
@@ -58,11 +61,13 @@ public class Game {
     IntStream neighbors(final int index) {
         return IntStream
                 .of(-SIZE - 1, -SIZE, -SIZE + 1, -1, 1, SIZE - 1, SIZE, SIZE + 1)
-                .filter(offset -> inRange(index, offset));
+                .filter(offset -> inRange(index, offset))
+                .map(offset -> index + offset);
     }
 
     boolean inRange(final int index, final int offset) {
-        return inRange(index % SIZE + offset % SIZE) && inRange(index / SIZE + offset / (SIZE - 1));
+        return inRange(index % SIZE + offset - offset / (SIZE - 1) * SIZE)
+                && inRange(index / SIZE + offset / (SIZE - 1));
     }
 
     boolean inRange(final int x) {
