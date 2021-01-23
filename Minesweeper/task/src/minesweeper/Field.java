@@ -55,7 +55,7 @@ public class Field {
     }
 
     public boolean isDigit(int index) {
-        return Character.isDigit(numbers[index]);
+        return state[index] >= 0;
     }
 
     public boolean isMine(int index) {

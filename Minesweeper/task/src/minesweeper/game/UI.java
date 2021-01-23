@@ -1,4 +1,7 @@
-package minesweeper;
+package minesweeper.game;
+
+import minesweeper.Field;
+import minesweeper.Suggestion;
 
 import java.util.Scanner;
 
@@ -12,7 +15,7 @@ public class UI {
 
     public int askMinesNumber() {
         while (true) {
-            System.out.print("How many mines do you want on the field?");
+            System.out.print("How many mines do you want on the field? ");
             final var minesCount = scanner.nextInt();
             if (minesCount >= Field.MIN_MINES && minesCount <= Field.MAX_MINES) {
                 return minesCount;

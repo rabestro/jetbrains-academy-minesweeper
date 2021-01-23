@@ -1,14 +1,20 @@
 package minesweeper;
 
+import minesweeper.game.Game;
+import minesweeper.game.UI;
+
 public class Application implements Runnable {
 
     @Override
     public void run() {
         final var ui = new UI();
 
-        final var game = new Field(ui.askMinesNumber());
-        System.out.println(game);
+        final var game = new Game(ui.askMinesNumber());
+        System.out.println(game.getBoard());
+        final var suggestion = ui.askSuggestion();
 
+
+        /*
         while (!game.isOver()) {
             final var suggestion = ui.askSuggestion();
 
@@ -18,17 +24,17 @@ public class Application implements Runnable {
             }
             if (suggestion.getState() == State.MINE) {
                 game.setMark(suggestion.getIndex());
-            } else {
-                if (game.isMine(suggestion.getIndex())) {
-                    game.markMines();
-                    System.out.println(game);
-                    System.out.println("You stepped on a mine and failed!");
-                    break;
-                }
+                System.out.println(game);
+                continue;
             }
-
-            System.out.println(game);
+            if (game.isMine(suggestion.getIndex())) {
+                game.markMines();
+                System.out.println(game);
+                System.out.println("You stepped on a mine and failed!");
+                break;
+            }
         }
+        */
         System.out.println("Congratulations! You found all the mines!");
     }
 }
