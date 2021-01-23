@@ -15,13 +15,15 @@ public enum CellState {
     MINE('X'),
     MARK('*'),
     UNKNOWN('.');
+
+    public static final Set<CellState> UNEXPLORED = Set.of(UNKNOWN, MARK);
+
     private final char symbol;
 
     CellState(char symbol) {
         this.symbol = symbol;
     }
 
-    public static final Set<CellState> UNEXPLORED = Set.of(UNKNOWN, MARK);
 
     public char getSymbol() {
         return symbol;

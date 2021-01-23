@@ -27,6 +27,30 @@ public class Game {
         }
     }
 
+    public void run() {
+        System.out.println(board);
+
+        final var suggestion = askSuggestion();
+        if (suggestion.getType() == Suggestion.Type.MINE) {
+            board.mark(suggestion.getIndex());
+        } else {
+            if (mines.get(suggestion.getIndex())) {
+                mines.stream().forEach(board::showMine);
+            }
+            explore(suggestion.getIndex());
+        }
+
+        System.out.println(board);
+    }
+
+    void explore(int index) {
+        int m = countMines(index);
+        board.setNumber(index, m);
+        if (m == 0) {
+            neighbors(index).filter(board::isUnexplored).forEach(this::explore);
+        }
+    }
+
     int countMines(final int index) {
         return (int) neighbors(index).filter(mines::get).count();
     }

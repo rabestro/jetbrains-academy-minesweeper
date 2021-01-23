@@ -1,17 +1,13 @@
 package minesweeper;
 
 import minesweeper.game.Game;
-import minesweeper.game.UI;
 
 public class Application implements Runnable {
 
     @Override
     public void run() {
-        final var ui = new UI();
 
-        final var game = Game.create();
-        System.out.println(game.getBoard());
-        final var suggestion = ui.askSuggestion();
+         Game.create().run();
 
 
         /*

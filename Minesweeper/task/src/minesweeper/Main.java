@@ -1,7 +1,9 @@
 package minesweeper;
 
+import minesweeper.game.Game;
+
 public class Main {
     public static void main(String[] args) {
-        new Application().run();
+        Game.create().run();
     }
 }

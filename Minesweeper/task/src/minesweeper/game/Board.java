@@ -12,12 +12,16 @@ public class Board {
         Arrays.fill(state, CellState.UNKNOWN);
     }
 
-    public boolean isExplored(int index) {
-        return !isUnexplored(index);
-    }
-
     public boolean isUnexplored(int index) {
         return CellState.UNEXPLORED.contains(state[index]);
+    }
+
+    public void mark(final int index) {
+        state[index] = (state[index] == CellState.MARK) ? CellState.UNKNOWN : CellState.MARK;
+    }
+
+    public void showMine(final int index) {
+        state[index] = CellState.MINE;
     }
 
     @Override
@@ -34,5 +38,9 @@ public class Board {
             output.append('│').append(System.lineSeparator());
         }
         return output.append("—│—————————│").toString();
+    }
+
+    public void setNumber(int index, int m) {
+        state[index] = CellState.values()[m];
     }
 }

@@ -2,19 +2,19 @@ package minesweeper.game;
 
 public final class Suggestion {
     private final int index;
-    private final Type state;
+    private final Type type;
 
-    public Suggestion(int x, int y, String state) {
+    public Suggestion(int x, int y, String type) {
         this.index = (y - 1) * Game.SIZE + (x - 1);
-        this.state = Type.valueOf(state.toUpperCase());
+        this.type = Type.valueOf(type.toUpperCase());
     }
 
     public int getIndex() {
         return index;
     }
 
-    public Type getState() {
-        return state;
+    public Type getType() {
+        return type;
     }
 
     enum Type {
