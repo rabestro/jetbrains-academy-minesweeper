@@ -1,82 +1,50 @@
 package minesweeper.game;
 
 import java.util.BitSet;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class Game {
     public static final int SIZE = 9;
-    public static final int CELLS = SIZE * SIZE;
 
-    private static final Random rnd = new Random();
     private static final Scanner scanner = new Scanner(System.in);
 
     private final BitSet mines = new BitSet(Board.CELLS);
-    //    private final BitSet suggestions = new BitSet(Board.CELLS);
-    private final Board board = new Board();
+    private final Board board;
+    private State state = State.PLAY;
+
+    private Game(final Board board) {
+        this.board = board;
+    }
 
     public static Game create() {
         System.out.print("How many mines do you want on the field? ");
-        return new Game(scanner.nextInt());
-    }
-
-    private Game(final int minesCount) {
-        while (mines.cardinality() < minesCount) {
-            mines.set(rnd.nextInt(CELLS));
-        }
+        return new Game(new Board(scanner.nextInt()));
     }
 
     public void run() {
-        System.out.println(board);
-
-        final var suggestion = askSuggestion();
-
-        if (suggestion.getType() == Suggestion.Type.MINE) {
-            board.mark(suggestion.getIndex());
-        } else {
+        do {
+            System.out.println(board);
+            final var suggestion = askSuggestion();
+            if (suggestion.getType() == Suggestion.Type.MINE) {
+                board.mark(suggestion.getIndex());
+                state = board.isAllMineMarked() ? State.WIN : State.PLAY;
+                continue;
+            }
             if (mines.get(suggestion.getIndex())) {
                 mines.stream().forEach(board::showMine);
-            } else {
-//                neighbors(suggestion.getIndex()).forEach(System.out::println);
-                explore(suggestion.getIndex());
+                state = State.LOSE;
+                break;
             }
-        }
+            board.exploreCell(suggestion.getIndex());
+            state = board.isAllExplored() ? State.WIN : State.PLAY;
+        } while (state == State.PLAY);
 
         System.out.println(board);
+        System.out.println(state == State.WIN
+                ? "Congratulations! You found all the mines!"
+                : "You stepped on a mine and failed!");
     }
 
-    void explore(int index) {
-        int m = countMines(index);
-        board.setNumber(index, m);
-        if (m == 0) {
-            neighbors(index).filter(board::isUnexplored).forEach(this::explore);
-        }
-    }
-
-    int countMines(final int index) {
-        return (int) neighbors(index).filter(mines::get).count();
-    }
-
-    IntStream neighbors(final int index) {
-        return IntStream
-                .of(-SIZE - 1, -SIZE, -SIZE + 1, -1, 1, SIZE - 1, SIZE, SIZE + 1)
-                .filter(offset -> inRange(index, offset))
-                .map(offset -> index + offset);
-    }
-
-    boolean inRange(final int index, final int offset) {
-        return inRange(index % SIZE + offset - offset / (SIZE - 1) * SIZE)
-                && inRange(index / SIZE + offset / (SIZE - 1));
-    }
-
-    boolean inRange(final int x) {
-        return x >= 0 && x < SIZE;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
 
     public Suggestion askSuggestion() {
         while (true) {
@@ -87,5 +55,9 @@ public class Game {
             }
             System.out.println("The cell is already explored!");
         }
+    }
+
+    enum State {
+        PLAY, WIN, LOSE
     }
 }
