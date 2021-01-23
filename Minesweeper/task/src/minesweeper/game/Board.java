@@ -1,51 +1,49 @@
 package minesweeper.game;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 public class Board {
     private final int size;
-    private final int cellsCount;
-    private final CellState[] state;
-    private final Set<Integer> mines;
+    private final CellState[] field;
+    private final Collection<Integer> mines;
 
     public Board(final int minesCount) {
         size = Game.SIZE;
-        cellsCount = size * size;
-        state = new CellState[size * size];
-        Arrays.fill(state, CellState.UNKNOWN);
+        field = new CellState[size * size];
+        Arrays.fill(field, CellState.UNKNOWN);
 
-        final var random = new Random();
-        mines = new HashSet<>(minesCount);
-
-        while (mines.size() < minesCount) {
-            mines.add(random.nextInt(cellsCount));
-        }
+        final var indexes = cellsIndexes().boxed().collect(toList());
+        Collections.shuffle(indexes);
+        mines = indexes.subList(0, minesCount);
     }
 
     boolean isAllMineMarked() {
-        return IntStream
-                .range(0, cellsCount)
-                .filter(i -> state[i] == CellState.MARK)
+        return cellsIndexes()
+                .filter(i -> field[i] == CellState.MARK)
                 .boxed()
                 .collect(toUnmodifiableSet())
                 .equals(mines);
     }
 
+    IntStream cellsIndexes() {
+        return IntStream.range(0, field.length);
+    }
+
     boolean isAllExplored() {
-        return Arrays.stream(state)
+        return Arrays.stream(field)
                 .filter(CellState.UNEXPLORED::contains)
                 .count() == mines.size();
     }
 
     void exploreCell(int index) {
         final int number = countMines(index);
-        state[index] = CellState.values()[number];
+        field[index] = CellState.values()[number];
 
         if (number == 0) {
             neighbors(index).filter(this::isUnexplored).forEach(this::exploreCell);
@@ -61,15 +59,15 @@ public class Board {
     }
 
     public boolean isUnexplored(int index) {
-        return CellState.UNEXPLORED.contains(state[index]);
+        return CellState.UNEXPLORED.contains(field[index]);
     }
 
     public void mark(final int index) {
-        state[index] = (state[index] == CellState.MARK) ? CellState.UNKNOWN : CellState.MARK;
+        field[index] = (field[index] == CellState.MARK) ? CellState.UNKNOWN : CellState.MARK;
     }
 
     public void showMines() {
-        mines.forEach(index -> state[index] = CellState.MINE);
+        mines.forEach(index -> field[index] = CellState.MINE);
     }
 
     IntStream neighbors(final int index) {
@@ -97,7 +95,7 @@ public class Board {
         for (int row = 1; row <= size; ++row) {
             output.append(row).append('│');
             for (int col = 1; col <= size; ++col) {
-                output.append(state[index++].getSymbol());
+                output.append(field[index++].getSymbol());
             }
             output.append('│').append(System.lineSeparator());
         }
