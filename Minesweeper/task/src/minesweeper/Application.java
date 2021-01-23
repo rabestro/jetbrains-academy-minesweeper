@@ -9,7 +9,7 @@ public class Application implements Runnable {
     public void run() {
         final var ui = new UI();
 
-        final var game = new Game(ui.askMinesNumber());
+        final var game = Game.create();
         System.out.println(game.getBoard());
         final var suggestion = ui.askSuggestion();
 

@@ -9,7 +9,15 @@ public class Board {
     private final CellState[] state = new CellState[CELLS];
 
     public Board() {
-        Arrays.fill(state, CellState.UNEXPLORED);
+        Arrays.fill(state, CellState.UNKNOWN);
+    }
+
+    public boolean isExplored(int index) {
+        return !isUnexplored(index);
+    }
+
+    public boolean isUnexplored(int index) {
+        return CellState.UNEXPLORED.contains(state[index]);
     }
 
     @Override
