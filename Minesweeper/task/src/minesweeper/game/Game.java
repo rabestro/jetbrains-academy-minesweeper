@@ -1,14 +1,11 @@
 package minesweeper.game;
 
-import java.util.BitSet;
 import java.util.Scanner;
 
 public class Game {
     public static final int SIZE = 9;
-
     private static final Scanner scanner = new Scanner(System.in);
 
-    private final BitSet mines = new BitSet(Board.CELLS);
     private final Board board;
     private State state = State.PLAY;
 
@@ -30,8 +27,8 @@ public class Game {
                 state = board.isAllMineMarked() ? State.WIN : State.PLAY;
                 continue;
             }
-            if (mines.get(suggestion.getIndex())) {
-                mines.stream().forEach(board::showMine);
+            if (board.hasMine(suggestion.getIndex())) {
+                board.showMines();
                 state = State.LOSE;
                 break;
             }

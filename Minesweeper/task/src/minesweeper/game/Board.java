@@ -1,42 +1,46 @@
 package minesweeper.game;
 
 import java.util.Arrays;
-import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.Set;
 import java.util.stream.IntStream;
 
-public class Board {
-    public static final int SIZE = 9;
-    public static final int CELLS = SIZE * SIZE;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
-    private final int size = 9;
+public class Board {
+    private final int size;
+    private final int cellsCount;
     private final CellState[] state;
-    private final BitSet mines;
+    private final Set<Integer> mines;
 
     public Board(final int minesCount) {
+        size = Game.SIZE;
+        cellsCount = size * size;
         state = new CellState[size * size];
         Arrays.fill(state, CellState.UNKNOWN);
 
-        mines = new BitSet(size * size);
         final var random = new Random();
+        mines = new HashSet<>(minesCount);
 
-        while (mines.cardinality() < minesCount) {
-            mines.set(random.nextInt(CELLS));
+        while (mines.size() < minesCount) {
+            mines.add(random.nextInt(cellsCount));
         }
     }
 
     boolean isAllMineMarked() {
         return IntStream
-                .range(0, size * size)
+                .range(0, cellsCount)
                 .filter(i -> state[i] == CellState.MARK)
                 .boxed()
-                .collect(Collectors.toSet())
-                .equals(mines.stream().boxed().collect(Collectors.toSet()));
+                .collect(toUnmodifiableSet())
+                .equals(mines);
     }
 
     boolean isAllExplored() {
-        return Arrays.stream(state).filter(CellState.UNEXPLORED::contains).count() == mines.cardinality();
+        return Arrays.stream(state)
+                .filter(CellState.UNEXPLORED::contains)
+                .count() == mines.size();
     }
 
     void exploreCell(int index) {
@@ -49,7 +53,11 @@ public class Board {
     }
 
     private int countMines(final int index) {
-        return (int) neighbors(index).filter(mines::get).count();
+        return (int) neighbors(index).filter(mines::contains).count();
+    }
+
+    public boolean hasMine(final int index) {
+        return mines.contains(index);
     }
 
     public boolean isUnexplored(int index) {
@@ -60,8 +68,8 @@ public class Board {
         state[index] = (state[index] == CellState.MARK) ? CellState.UNKNOWN : CellState.MARK;
     }
 
-    public void showMine(final int index) {
-        state[index] = CellState.MINE;
+    public void showMines() {
+        mines.forEach(index -> state[index] = CellState.MINE);
     }
 
     IntStream neighbors(final int index) {
@@ -96,7 +104,4 @@ public class Board {
         return output.append("—│—————————│").toString();
     }
 
-    public void setNumber(int index, int m) {
-        state[index] = CellState.values()[m];
-    }
 }
