@@ -20,7 +20,7 @@ public enum CellState {
 
     private final char symbol;
 
-    CellState(char symbol) {
+    CellState(final char symbol) {
         this.symbol = symbol;
     }
 

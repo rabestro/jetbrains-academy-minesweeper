@@ -1,8 +1,8 @@
 package minesweeper.game;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 public class Board {
     private final int size;
     private final CellState[] field;
-    private final Collection<Integer> mines;
+    private final Set<Integer> mines;
 
     public Board(final int minesCount) {
         size = Game.SIZE;
@@ -20,7 +20,7 @@ public class Board {
 
         final var indexes = cellsIndexes().boxed().collect(toList());
         Collections.shuffle(indexes);
-        mines = indexes.subList(0, minesCount);
+        mines = Set.copyOf(indexes.subList(0, minesCount));
     }
 
     boolean isAllMineMarked() {
@@ -41,7 +41,7 @@ public class Board {
                 .count() == mines.size();
     }
 
-    void exploreCell(int index) {
+    void exploreCell(final int index) {
         final int number = countMines(index);
         field[index] = CellState.values()[number];
 
@@ -58,7 +58,7 @@ public class Board {
         return mines.contains(index);
     }
 
-    public boolean isUnexplored(int index) {
+    public boolean isUnexplored(final int index) {
         return CellState.UNEXPLORED.contains(field[index]);
     }
 
@@ -102,4 +102,26 @@ public class Board {
         return output.append("—│—————————│").toString();
     }
 
+    enum SuggestionType {
+        FREE, MINE
+    }
+
+    class Suggestion {
+        private final int index;
+        private final SuggestionType type;
+
+        public Suggestion(final int x, final int y, final String type) {
+            this.index = (y - 1) * size + (x - 1);
+            this.type = SuggestionType.valueOf(type.toUpperCase());
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public SuggestionType getType() {
+            return type;
+        }
+
+    }
 }

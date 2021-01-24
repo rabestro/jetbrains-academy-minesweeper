@@ -7,7 +7,7 @@ public class Game {
     private static final Scanner scanner = new Scanner(System.in);
 
     private final Board board;
-    private State state = State.PLAY;
+    private GameState state = GameState.PLAY;
 
     private Game(final Board board) {
         this.board = board;
@@ -22,31 +22,31 @@ public class Game {
         do {
             System.out.println(board);
             final var suggestion = askSuggestion();
-            if (suggestion.getType() == Suggestion.Type.MINE) {
+            if (suggestion.getType() == Board.SuggestionType.MINE) {
                 board.mark(suggestion.getIndex());
-                state = board.isAllMineMarked() ? State.WIN : State.PLAY;
+                state = board.isAllMineMarked() ? GameState.WIN : GameState.PLAY;
                 continue;
             }
             if (board.hasMine(suggestion.getIndex())) {
                 board.showMines();
-                state = State.LOSE;
+                state = GameState.LOSE;
                 break;
             }
             board.exploreCell(suggestion.getIndex());
-            state = board.isAllExplored() ? State.WIN : State.PLAY;
-        } while (state == State.PLAY);
+            state = board.isAllExplored() ? GameState.WIN : GameState.PLAY;
+        } while (state == GameState.PLAY);
 
         System.out.println(board);
-        System.out.println(state == State.WIN
+        System.out.println(state == GameState.WIN
                 ? "Congratulations! You found all the mines!"
                 : "You stepped on a mine and failed!");
     }
 
 
-    public Suggestion askSuggestion() {
+    public Board.Suggestion askSuggestion() {
         while (true) {
             System.out.print("Set/unset mines marks or claim a cell as free: ");
-            final var suggestion = new Suggestion(scanner.nextInt(), scanner.nextInt(), scanner.next());
+            final var suggestion = board.new Suggestion(scanner.nextInt(), scanner.nextInt(), scanner.next());
             if (board.isUnexplored(suggestion.getIndex())) {
                 return suggestion;
             }
@@ -54,7 +54,7 @@ public class Game {
         }
     }
 
-    enum State {
+    enum GameState {
         PLAY, WIN, LOSE
     }
 }
