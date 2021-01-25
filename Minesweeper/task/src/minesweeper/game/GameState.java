@@ -1,6 +1,6 @@
 package minesweeper.game;
 
-public enum GameState {
+enum GameState {
     PLAYING(""),
     WIN("Congratulations! You found all the mines!"),
     LOSE("You stepped on a mine and failed!");

@@ -2,7 +2,7 @@ package minesweeper.game;
 
 import java.util.Set;
 
-public enum CellState {
+enum CellState {
     ZERO('/'),
     ONO('1'),
     TWO('2'),
@@ -16,7 +16,7 @@ public enum CellState {
     MARK('*'),
     UNKNOWN('.');
 
-    public static final Set<CellState> UNEXPLORED = Set.of(UNKNOWN, MARK);
+    static final Set<CellState> UNEXPLORED = Set.of(UNKNOWN, MARK);
 
     private final char symbol;
 
