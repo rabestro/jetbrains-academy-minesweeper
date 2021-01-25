@@ -1,9 +1,6 @@
 package minesweeper.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.*;
@@ -11,28 +8,38 @@ import static java.util.stream.IntStream.range;
 import static java.util.stream.IntStream.rangeClosed;
 
 public final class Board {
-    private static final int DEFAULT_SIZE = 9;
+    public static final int DEFAULT_SIZE = 9;
 
     private final int size = DEFAULT_SIZE;
     private final CellState[] field;
     private final Set<Integer> mines;
     private final String template;
+    private final int minesCount;
 
     Board(final int minesCount) {
+        this.minesCount = minesCount;
         field = new CellState[size * size];
         Arrays.fill(field, CellState.UNKNOWN);
         template = createTemplate();
+        mines = new HashSet<>();
+    }
 
-        final var indexes = range(0, field.length).boxed()
+    private void placeMines(final int firstMove) {
+        final var indexes = range(0, field.length)
+                .boxed()
                 .collect(toCollection(ArrayList::new));
+        indexes.remove(firstMove);
         Collections.shuffle(indexes);
-        mines = Set.copyOf(indexes.subList(0, minesCount));
+        mines.addAll(indexes.subList(0, minesCount));
     }
 
     GameState getState(final int index, final boolean isMineMark) {
         if (isMineMark) {
             flipMark(index);
             return isAllMinesMarked() ? GameState.WIN : GameState.PLAYING;
+        }
+        if (mines.isEmpty()) {
+            placeMines(index);
         }
         if (mines.contains(index)) {
             showMines();
@@ -109,7 +116,7 @@ public final class Board {
         return ""
                 + " │123456789│%n"
                 + "—│—————————│%n"
-                + rangeClosed(1, size).mapToObj(row -> row + "│" + "%s".repeat(size) + "│%n").collect(joining())
+                + rangeClosed(1, size).mapToObj(row -> row + "│%s%s%s%s%s%s%s%s%s│%n").collect(joining())
                 + "—│—————————│";
     }
 }
