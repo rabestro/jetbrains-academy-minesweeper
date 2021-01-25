@@ -5,18 +5,20 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableSet;
+import static java.util.stream.Collectors.*;
+import static java.util.stream.IntStream.rangeClosed;
 
 public class Board {
     private final int size;
     private final CellState[] field;
     private final Set<Integer> mines;
+    private final String template;
 
     public Board(final int minesCount) {
         size = Game.SIZE;
         field = new CellState[size * size];
         Arrays.fill(field, CellState.UNKNOWN);
+        template = createTemplate();
 
         final var indexes = cellsIndexes().boxed().collect(toList());
         Collections.shuffle(indexes);
@@ -98,18 +100,15 @@ public class Board {
 
     @Override
     public String toString() {
-        final var output = new StringBuilder()
-                .append(" │123456789│").append(System.lineSeparator())
-                .append("—│—————————│").append(System.lineSeparator());
-        int index = 0;
-        for (int row = 1; row <= size; ++row) {
-            output.append(row).append('│');
-            for (int col = 1; col <= size; ++col) {
-                output.append(field[index++].getSymbol());
-            }
-            output.append('│').append(System.lineSeparator());
-        }
-        return output.append("—│—————————│").toString();
+        return String.format(template, (Object[]) field);
+    }
+
+    private String createTemplate() {
+        return ""
+                + " │123456789│%n"
+                + "—│—————————│%n"
+                + rangeClosed(1, size).mapToObj(row -> row + "│" + "%s".repeat(size) + "│%n").collect(joining())
+                + "—│—————————│";
     }
 
     class Suggestion {
@@ -124,6 +123,5 @@ public class Board {
         public int getIndex() {
             return index;
         }
-
     }
 }
