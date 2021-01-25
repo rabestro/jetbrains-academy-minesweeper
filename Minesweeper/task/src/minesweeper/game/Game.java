@@ -7,7 +7,6 @@ public class Game {
     private static final Scanner scanner = new Scanner(System.in);
 
     private final Board board;
-    private GameState state = GameState.PLAY;
 
     private Game(final Board board) {
         this.board = board;
@@ -19,29 +18,16 @@ public class Game {
     }
 
     public void run() {
-        do {
+        var gameState = GameState.PLAYING;
+
+        while (gameState == GameState.PLAYING) {
             System.out.println(board);
-            final var suggestion = askSuggestion();
-            if (suggestion.isMine()) {
-                board.mark(suggestion.getIndex());
-                state = board.isAllMineMarked() ? GameState.WIN : GameState.PLAY;
-                continue;
-            }
-            if (board.hasMine(suggestion.getIndex())) {
-                board.showMines();
-                state = GameState.LOSE;
-                break;
-            }
-            board.exploreCell(suggestion.getIndex());
-            state = board.isAllExplored() ? GameState.WIN : GameState.PLAY;
-        } while (state == GameState.PLAY);
+            gameState = board.getState(askSuggestion());
+        }
 
         System.out.println(board);
-        System.out.println(state == GameState.WIN
-                ? "Congratulations! You found all the mines!"
-                : "You stepped on a mine and failed!");
+        System.out.println(gameState);
     }
-
 
     public Board.Suggestion askSuggestion() {
         while (true) {
@@ -54,7 +40,4 @@ public class Game {
         }
     }
 
-    enum GameState {
-        PLAY, WIN, LOSE
-    }
 }

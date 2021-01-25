@@ -23,7 +23,7 @@ public class Board {
         mines = Set.copyOf(indexes.subList(0, minesCount));
     }
 
-    boolean isAllMineMarked() {
+    private boolean isAllMinesMarked() {
         return cellsIndexes()
                 .filter(i -> field[i] == CellState.MARK)
                 .boxed()
@@ -35,39 +35,49 @@ public class Board {
         return IntStream.range(0, field.length);
     }
 
-    boolean isAllExplored() {
+    private boolean isAllExplored() {
         return Arrays.stream(field)
                 .filter(CellState.UNEXPLORED::contains)
                 .count() == mines.size();
-    }
-
-    void exploreCell(final int index) {
-        final int number = countMines(index);
-        field[index] = CellState.values()[number];
-
-        if (number == 0) {
-            neighbors(index).filter(this::isUnexplored).forEach(this::exploreCell);
-        }
     }
 
     private int countMines(final int index) {
         return (int) neighbors(index).filter(mines::contains).count();
     }
 
-    public boolean hasMine(final int index) {
-        return mines.contains(index);
-    }
-
-    public boolean isUnexplored(final int index) {
+    boolean isUnexplored(final int index) {
         return CellState.UNEXPLORED.contains(field[index]);
     }
 
-    public void mark(final int index) {
-        field[index] = (field[index] == CellState.MARK) ? CellState.UNKNOWN : CellState.MARK;
+    GameState getState(final Suggestion suggestion) {
+        final int index = suggestion.getIndex();
+        if (suggestion.isMine) {
+            flipMark(index);
+            return isAllMinesMarked() ? GameState.WIN : GameState.PLAYING;
+        }
+        if (mines.contains(index)) {
+            showMines();
+            return GameState.LOSE;
+        }
+        exploreCell(index);
+        return isAllExplored() ? GameState.WIN : GameState.PLAYING;
     }
 
-    public void showMines() {
+    private void flipMark(final int index) {
+        field[index] = field[index] == CellState.MARK ? CellState.UNKNOWN : CellState.MARK;
+    }
+
+    private void showMines() {
         mines.forEach(index -> field[index] = CellState.MINE);
+    }
+
+    private void exploreCell(final int index) {
+        final int number = countMines(index);
+        field[index] = CellState.values()[number];
+
+        if (number == 0) {
+            neighbors(index).filter(this::isUnexplored).forEach(this::exploreCell);
+        }
     }
 
     IntStream neighbors(final int index) {
@@ -103,7 +113,6 @@ public class Board {
     }
 
     class Suggestion {
-
         private final int index;
         private final boolean isMine;
 
@@ -116,8 +125,5 @@ public class Board {
             return index;
         }
 
-        public boolean isMine() {
-            return isMine;
-        }
     }
 }
