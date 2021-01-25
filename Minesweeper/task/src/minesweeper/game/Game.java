@@ -22,7 +22,7 @@ public class Game {
         do {
             System.out.println(board);
             final var suggestion = askSuggestion();
-            if (suggestion.getType() == Board.SuggestionType.MINE) {
+            if (suggestion.isMine()) {
                 board.mark(suggestion.getIndex());
                 state = board.isAllMineMarked() ? GameState.WIN : GameState.PLAY;
                 continue;

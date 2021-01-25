@@ -102,26 +102,22 @@ public class Board {
         return output.append("—│—————————│").toString();
     }
 
-    enum SuggestionType {
-        FREE, MINE
-    }
-
     class Suggestion {
+
         private final int index;
-        private final SuggestionType type;
+        private final boolean isMine;
 
         public Suggestion(final int x, final int y, final String type) {
             this.index = (y - 1) * size + (x - 1);
-            this.type = SuggestionType.valueOf(type.toUpperCase());
+            isMine = "mine".equalsIgnoreCase(type);
         }
 
         public int getIndex() {
             return index;
         }
 
-        public SuggestionType getType() {
-            return type;
+        public boolean isMine() {
+            return isMine;
         }
-
     }
 }
