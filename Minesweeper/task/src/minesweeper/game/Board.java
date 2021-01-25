@@ -23,14 +23,6 @@ public class Board {
         mines = Set.copyOf(indexes.subList(0, minesCount));
     }
 
-    private boolean isAllMinesMarked() {
-        return cellsIndexes()
-                .filter(i -> field[i] == CellState.MARK)
-                .boxed()
-                .collect(toUnmodifiableSet())
-                .equals(mines);
-    }
-
     IntStream cellsIndexes() {
         return IntStream.range(0, field.length);
     }
@@ -61,6 +53,14 @@ public class Board {
         }
         exploreCell(index);
         return isAllExplored() ? GameState.WIN : GameState.PLAYING;
+    }
+
+    private boolean isAllMinesMarked() {
+        return cellsIndexes()
+                .filter(i -> field[i] == CellState.MARK)
+                .boxed()
+                .collect(toUnmodifiableSet())
+                .equals(mines);
     }
 
     private void flipMark(final int index) {
