@@ -2,7 +2,7 @@ package minesweeper.game;
 
 import java.util.Scanner;
 
-public class Game {
+public class Game implements Runnable {
     public static final int SIZE = 9;
     private static final Scanner scanner = new Scanner(System.in);
 
