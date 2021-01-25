@@ -6,46 +6,29 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.*;
+import static java.util.stream.IntStream.range;
 import static java.util.stream.IntStream.rangeClosed;
 
 public class Board {
-    private final int size;
+    private static final int DEFAULT_SIZE = 9;
+
+    private final int size = DEFAULT_SIZE;
     private final CellState[] field;
     private final Set<Integer> mines;
     private final String template;
 
     public Board(final int minesCount) {
-        size = Game.SIZE;
         field = new CellState[size * size];
         Arrays.fill(field, CellState.UNKNOWN);
         template = createTemplate();
 
-        final var indexes = cellsIndexes().boxed().collect(toList());
+        final var indexes = range(0, field.length).boxed().collect(toList());
         Collections.shuffle(indexes);
         mines = Set.copyOf(indexes.subList(0, minesCount));
     }
 
-    IntStream cellsIndexes() {
-        return IntStream.range(0, field.length);
-    }
-
-    private boolean isAllExplored() {
-        return Arrays.stream(field)
-                .filter(CellState.UNEXPLORED::contains)
-                .count() == mines.size();
-    }
-
-    private int countMines(final int index) {
-        return (int) neighbors(index).filter(mines::contains).count();
-    }
-
-    boolean isUnexplored(final int index) {
-        return CellState.UNEXPLORED.contains(field[index]);
-    }
-
-    GameState getState(final Suggestion suggestion) {
-        final int index = suggestion.getIndex();
-        if (suggestion.isMine) {
+    GameState getState(final int index, final boolean isMine) {
+        if (isMine) {
             flipMark(index);
             return isAllMinesMarked() ? GameState.WIN : GameState.PLAYING;
         }
@@ -57,8 +40,23 @@ public class Board {
         return isAllExplored() ? GameState.WIN : GameState.PLAYING;
     }
 
+    int toIndex(final int x, final int y) {
+        final int index = (y - 1) * size + (x - 1);
+        return CellState.UNEXPLORED.contains(field[index]) ? index : -1;
+    }
+
+    private boolean isAllExplored() {
+        return Arrays.stream(field)
+                .filter(CellState.UNEXPLORED::contains)
+                .count() == mines.size();
+    }
+
+    boolean isUnexplored(final int index) {
+        return CellState.UNEXPLORED.contains(field[index]);
+    }
+
     private boolean isAllMinesMarked() {
-        return cellsIndexes()
+        return range(0, field.length)
                 .filter(i -> field[i] == CellState.MARK)
                 .boxed()
                 .collect(toUnmodifiableSet())
@@ -80,6 +78,10 @@ public class Board {
         if (number == 0) {
             neighbors(index).filter(this::isUnexplored).forEach(this::exploreCell);
         }
+    }
+
+    private int countMines(final int index) {
+        return (int) neighbors(index).filter(mines::contains).count();
     }
 
     IntStream neighbors(final int index) {
@@ -109,19 +111,5 @@ public class Board {
                 + "—│—————————│%n"
                 + rangeClosed(1, size).mapToObj(row -> row + "│" + "%s".repeat(size) + "│%n").collect(joining())
                 + "—│—————————│";
-    }
-
-    class Suggestion {
-        private final int index;
-        private final boolean isMine;
-
-        public Suggestion(final int x, final int y, final String type) {
-            this.index = (y - 1) * size + (x - 1);
-            isMine = "mine".equalsIgnoreCase(type);
-        }
-
-        public int getIndex() {
-            return index;
-        }
     }
 }
