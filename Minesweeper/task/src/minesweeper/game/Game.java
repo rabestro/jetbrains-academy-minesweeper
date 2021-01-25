@@ -1,6 +1,7 @@
 package minesweeper.game;
 
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class Game implements Runnable {
     public static final int SIZE = 9;
@@ -18,18 +19,24 @@ public class Game implements Runnable {
     }
 
     public void run() {
-        var gameState = GameState.PLAYING;
+//        var gameState = GameState.PLAYING;
+//        while (gameState == GameState.PLAYING) {
+//            gameState = board.getState(askSuggestion());
+//        }
 
-        while (gameState == GameState.PLAYING) {
-            System.out.println(board);
-            gameState = board.getState(askSuggestion());
-        }
+        final var gameState = Stream
+                .generate(this::askSuggestion)
+                .map(board::getState)
+                .dropWhile(GameState.PLAYING::equals)
+                .findFirst()
+                .orElse(GameState.LOSE);
 
         System.out.println(board);
         System.out.println(gameState);
     }
 
     public Board.Suggestion askSuggestion() {
+        System.out.println(board);
         while (true) {
             System.out.print("Set/unset mines marks or claim a cell as free: ");
             final var suggestion = board.new Suggestion(scanner.nextInt(), scanner.nextInt(), scanner.next());
