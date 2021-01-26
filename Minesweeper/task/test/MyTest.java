@@ -28,7 +28,7 @@ public class MyTest extends StageTest {
     @DynamicTest
     CheckResult FirstQuestionTest() {
         final var program = new TestedProgram();
-        assertContains(program.start(), "how many mines", "first_question");
+        Assert.contains(program.start(), "how many mines", "first_question");
         return CheckResult.correct();
     }
 
@@ -41,7 +41,9 @@ public class MyTest extends StageTest {
         program.start();
         final var output = program.execute(String.valueOf(minesCount));
 
-        assertContains(output, "set/unset mines marks", "ask_coordinates");
+        final var step = GameStep.parse(output);
+
+        Assert.contains(output, "set/unset mines marks", "ask_coordinates");
 
         return CheckResult.correct();
     }
