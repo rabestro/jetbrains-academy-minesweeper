@@ -13,12 +13,13 @@ public class GameStep {
     }
 
     static GameStep parse(final String output) {
-        final var lines = output.lines().toArray(String[]::new);
+        final var data = output.toLowerCase().strip();
+        final var lines = data.lines().toArray(String[]::new);
 
         Assert.that(lines.length >= 13, "less_then_13_lines", lines.length);
-        Assert.contains(output, "123456789", "board_header_numbers");
+        Assert.contains(data, "123456789", "board_header_numbers");
 
-        final var board = output.replaceAll("(?s).*?1│|│.{1,3}\\d│|│.*", "");
+        final var board = data.replaceAll("(?s).*?1│|│.{1,3}\\d│|│.*", "");
         final var cellsCount = SIZE * SIZE;
 
         Assert.that(board.length() == cellsCount, "cells_number_incorrect", cellsCount, board.length());
@@ -29,14 +30,26 @@ public class GameStep {
                 .noneMatch(index -> neighbors(index).map(board::charAt).anyMatch(second::equals));
 
         Assert.that(noNeighbors.test('.', '/'), "impossible_dot_slash");
-        Assert.that(noNeighbors.test('X', '/'), "impossible_x_slash");
+        Assert.that(noNeighbors.test('x', '/'), "impossible_x_slash");
         Assert.that(noNeighbors.test('*', '/'), "impossible_asterisk_slash");
-
-        return new GameStep(board, "");
+        final var prompt = lines[lines.length - 1];
+        return new GameStep(board, prompt);
     }
 
     private final String message;
     private final String board;
+
+    boolean isFailed() {
+        return message.contains("failed");
+    }
+
+    boolean isWin() {
+        return message.contains("congratulations");
+    }
+
+    boolean isPlaying() {
+        return message.contains("unset mines");
+    }
 
     private static IntStream neighbors(final int index) {
         return IntStream

@@ -1,34 +1,32 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
+import java.util.Random;
 import java.util.ResourceBundle;
-
-import static java.text.MessageFormat.format;
 
 public class MyTest extends StageTest {
     private static final ResourceBundle messages = ResourceBundle.getBundle("messages");
-
-    private static void assertContains(
-            final String output,
-            final String lookFor,
-            final String errorMessage,
-            final Object ...args) {
-
-        if (!output.toLowerCase().contains(lookFor)) {
-            final var feedback = format(messages.getString(errorMessage), args)
-                    + "\nExpected to find '" + lookFor + "' in output."
-                    + "\nYou program output:\n" + output;
-            throw new WrongAnswer(feedback);
-        }
-    }
+    private static final Random random = new Random();
+    private static final String MINES_70 = "70";
 
     @DynamicTest
-    CheckResult FirstQuestionTest() {
+    CheckResult FirstQuestionShouldAskMineCount() {
         final var program = new TestedProgram();
-        Assert.contains(program.start(), "how many mines", "first_question");
+        Assert.contains(new TestedProgram().start(), "how many mines", "first_question");
+        return CheckResult.correct();
+    }
+
+    @DynamicTest(repeat = 50)
+    CheckResult FirstFreeMoveShouldBySafe() {
+        final var program = new TestedProgram();
+        program.start();
+        program.execute(MINES_70);
+        final var output = program.execute(getRandomFreeMove());
+        final var game = GameStep.parse(output);
+
+        Assert.that(!game.isFailed(), "first_free_move");
         return CheckResult.correct();
     }
 
@@ -46,5 +44,9 @@ public class MyTest extends StageTest {
         Assert.contains(output, "set/unset mines marks", "ask_coordinates");
 
         return CheckResult.correct();
+    }
+
+    private static String getRandomFreeMove() {
+        return String.format("%d %d free", 1 + random.nextInt(9), 1 + random.nextInt(9));
     }
 }
