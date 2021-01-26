@@ -3,8 +3,11 @@ import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
+import java.util.ResourceBundle;
 
 public class MyTest extends StageTest {
+    //private static final ResourceBundle messages = ResourceBundle.getBundle("messages");
+
     @DynamicTest
     CheckResult FirstQuestionTest() {
         final var program = new TestedProgram();
@@ -14,5 +17,6 @@ public class MyTest extends StageTest {
         }
         return CheckResult.correct();
     }
+
 
 }
