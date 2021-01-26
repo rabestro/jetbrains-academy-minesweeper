@@ -18,5 +18,15 @@ public class MyTest extends StageTest {
         return CheckResult.correct();
     }
 
+    int[] mines = {
+            1, 2, 3, 4, 5
+    };
+    @DynamicTest(data = "mines")
+    CheckResult GameBoardTest(final int minesCount) {
+        final var program = new TestedProgram();
+        program.start();
+        final var output = program.execute(String.valueOf(minesCount));
 
+        return CheckResult.correct();
+    }
 }

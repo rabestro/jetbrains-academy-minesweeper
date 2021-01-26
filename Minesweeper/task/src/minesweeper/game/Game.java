@@ -17,7 +17,7 @@ public class Game implements Runnable {
 
     public static Game create() {
         System.out.print("How many mines do you want on the field? ");
-        final int minesCount = scanner.nextInt();
+        final int minesCount = Integer.parseInt(scanner.nextLine());
         final int maxMines = Board.DEFAULT_SIZE * Board.DEFAULT_SIZE - 1;
         if (minesCount < 1 || minesCount > maxMines) {
             throw new IllegalArgumentException("The mine count should be from 1 to " + maxMines);
