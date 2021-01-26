@@ -18,7 +18,7 @@ public class MyTest extends StageTest {
         return CheckResult.correct();
     }
 
-    @DynamicTest(repeat = 50)
+    @DynamicTest(repeat = 10)
     CheckResult FirstFreeMoveShouldBySafe() {
         final var program = new TestedProgram();
         program.start();
@@ -30,9 +30,7 @@ public class MyTest extends StageTest {
         return CheckResult.correct();
     }
 
-    int[] mines = {
-            1, 2, 3, 4, 5
-    };
+    int[] mines = {1, 2, 3, 4, 5};
     @DynamicTest(data = "mines")
     CheckResult GameBoardTest(final int minesCount) {
         final var program = new TestedProgram();

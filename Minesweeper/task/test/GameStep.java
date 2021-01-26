@@ -29,10 +29,13 @@ public class GameStep {
                 .filter(index -> board.charAt(index) == first)
                 .noneMatch(index -> neighbors(index).map(board::charAt).anyMatch(second::equals));
 
-        Assert.that(noNeighbors.test('.', '/'), "impossible_dot_slash");
-        Assert.that(noNeighbors.test('x', '/'), "impossible_x_slash");
-        Assert.that(noNeighbors.test('*', '/'), "impossible_asterisk_slash");
+        Assert.that(noNeighbors.test('.', '/'), "impossible_slash_dot");
+        Assert.that(noNeighbors.test('x', '/'), "impossible_slash_x");
+        Assert.that(noNeighbors.test('*', '/'), "impossible_slash_asterisk");
+
         final var prompt = lines[lines.length - 1];
+        Assert.that(board.indexOf('x') == -1 || prompt.contains("failed"), "no_failed_and_x");
+
         return new GameStep(board, prompt);
     }
 
