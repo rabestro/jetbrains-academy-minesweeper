@@ -6,8 +6,13 @@ public class GameStep {
     }
 
     static GameStep parse(final String output) {
+        Assert.that(output.lines().count() >= 13, "less_then_13_lines");
         Assert.contains(output, "123456789", "board_header_numbers");
-        return new GameStep("", "");
+
+        final var board = output.replaceAll("(?s).*?1│|│.{1,3}\\d│|│.*", "");
+        Assert.matches(board, "[./*X1-9]*", "illegal_symbol");
+
+        return new GameStep(board, "");
     }
 
     private final String message;
