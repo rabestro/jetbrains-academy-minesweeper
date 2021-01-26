@@ -25,8 +25,10 @@ public class MyTest extends StageTest {
     CheckResult GameBoardTest(final int minesCount) {
         final var program = new TestedProgram();
         program.start();
-        final var output = program.execute(String.valueOf(minesCount));
-
+        final var output = program.execute(String.valueOf(minesCount)).toLowerCase();
+        if (!output.contains("set/unset mines marks")) {
+            return CheckResult.wrong("The program should ask user for coordinates and operation");
+        }
         return CheckResult.correct();
     }
 }
