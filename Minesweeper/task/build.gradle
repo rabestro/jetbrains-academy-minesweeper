@@ -1,0 +1,8 @@
+sourceSets {
+    test {
+        resources {
+            srcDir 'test'
+//            include 'messages.properties'
+        }
+    }
+}
