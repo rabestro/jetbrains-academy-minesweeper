@@ -14,7 +14,7 @@ public class MyTest extends StageTest {
     @DynamicTest
     CheckResult FirstQuestionShouldAskMineCount() {
         final var program = new TestedProgram();
-        Assert.contains(new TestedProgram().start(), "how many mines", "first_question");
+        Assert.contains(program.start(), "how many mines", "first_question");
         return CheckResult.correct();
     }
 
