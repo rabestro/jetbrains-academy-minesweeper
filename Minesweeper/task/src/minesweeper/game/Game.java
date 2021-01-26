@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 public class Game implements Runnable {
     private static final String INPUT_FORMAT = "[1-9] [1-9] (free|mine)";
     private static final Pattern INPUT_PATTERN = Pattern.compile(INPUT_FORMAT);
-
     private static final Scanner scanner = new Scanner(System.in);
 
     private final Board board;
@@ -30,7 +29,7 @@ public class Game implements Runnable {
         final var gameState = Stream
                 .generate(this::makeSuggestion)
                 .dropWhile(GameState.PLAYING::equals)
-                .findFirst().orElse(GameState.LOSE);
+                .findFirst().orElseThrow();
 
         System.out.println(board);
         System.out.println(gameState);

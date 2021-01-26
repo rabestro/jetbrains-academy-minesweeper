@@ -18,17 +18,16 @@ public final class Board {
 
     Board(final int minesCount) {
         this.minesCount = minesCount;
-        field = new CellState[size * size];
+        this.mines = new HashSet<>(minesCount);
+        this.template = createTemplate();
+        this.field = new CellState[size * size];
         Arrays.fill(field, CellState.UNKNOWN);
-        template = createTemplate();
-        mines = new HashSet<>();
     }
 
-    private void placeMines(final int firstMove) {
-        final var indexes = range(0, field.length)
-                .boxed()
+    private void placeMines(final int firstSuggestion) {
+        final var indexes = range(0, field.length).boxed()
                 .collect(toCollection(ArrayList::new));
-        indexes.remove(firstMove);
+        indexes.remove(firstSuggestion);
         Collections.shuffle(indexes);
         mines.addAll(indexes.subList(0, minesCount));
     }
