@@ -26,7 +26,7 @@ public class GameStep {
 
         Assert.contains(data, "│123456789│", "board_header_numbers");
 
-        final var board = data.replaceAll("(?s).*?1│|│.{1,3}\\d│|│.*", "");
+        final var board = data.replaceAll("(?s).*?│.{1,3}1│|│.{1,3}\\d│|│.*", "");
         final var cellsCount = SIZE * SIZE;
 
         Assert.that(board.length() == cellsCount, "cells_number_incorrect", cellsCount, board.length());
@@ -82,5 +82,9 @@ public class GameStep {
 
     static IntStream allIndexes() {
         return range(0, CELLS_COUNT);
+    }
+
+    boolean isDot(int index) {
+        return board.charAt(index) == '.';
     }
 }

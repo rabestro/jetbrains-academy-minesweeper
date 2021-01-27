@@ -32,19 +32,26 @@ public class MyTest extends StageTest {
         return CheckResult.correct();
     }
 
-    @DynamicTest
+    @DynamicTest(repeat = 10)
     CheckResult oneMineWinBySuggestingEachFieldTest() {
         final var program = new TestedProgram();
         program.start();
         program.execute(ONE_MINE);
 
+        final var initialBoard = GameStep.parse(program.execute(getRandomFreeMove()));
+
+        if (initialBoard.isWin()) {
+            return CheckResult.correct();
+        }
+        Assert.that(initialBoard.isPlaying(), "first_free_move");
+
         final IntPredicate isMineFound = index -> {
             var game = GameStep.parse(program.execute(toMove(index, true)));
             Assert.that(game.countSymbol('*') == 1, "expect_one_asterisk");
-            Assert.that(!game.isFailed(), "no_failed_after_mark");
             if (game.isWin()) {
                 return true;
             }
+            Assert.that(game.isPlaying(), "no_failed_after_mark");
             game = GameStep.parse(program.execute(toMove(index, true)));
             Assert.that(game.countSymbol('*') == 0, "expect_no_asterisk");
             Assert.that(game.isPlaying(), "expected_playing");
@@ -52,6 +59,7 @@ public class MyTest extends StageTest {
         };
 
         GameStep.allIndexes()
+                .filter(initialBoard::isDot)
                 .filter(isMineFound)
                 .findFirst()
                 .orElseThrow(() -> Assert.error("no_mine_found"));
@@ -77,7 +85,7 @@ public class MyTest extends StageTest {
     }
 
     private static String toMove(final int index, final boolean isMark) {
-        return String.format("%d %d %s", 1 + index / GameStep.SIZE, 1 + index % GameStep.SIZE, isMark ? "mine" : "free");
+        return String.format("%d %d %s", 1 + index % GameStep.SIZE, 1 + index / GameStep.SIZE, isMark ? "mine" : "free");
     }
 
     private static String getRandomFreeMove() {

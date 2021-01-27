@@ -62,7 +62,7 @@ public final class Board {
     }
 
     private boolean isAllMinesMarked() {
-        return range(0, field.length)
+        return mines.size() > 0 && range(0, field.length)
                 .filter(i -> field[i] == CellState.MARK)
                 .boxed()
                 .collect(toUnmodifiableSet())
