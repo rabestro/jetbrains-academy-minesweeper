@@ -14,11 +14,17 @@ public class GameStep {
     }
 
     static GameStep parse(final String output) {
-        final var data = output.toLowerCase().strip();
-        final var lines = data.lines().toArray(String[]::new);
+        final var data = output.toLowerCase().strip()
+                .replace("|", "│")
+                .replace("-", "—");
 
+        final var lines = data.lines().toArray(String[]::new);
         Assert.that(lines.length >= 13, "less_then_13_lines", lines.length);
-        Assert.contains(data, "123456789", "board_header_numbers");
+
+        final var message = lines[lines.length - 1];
+        Assert.find(message,"failed|congratulations|unset mines", "no_last_message");
+
+        Assert.contains(data, "│123456789│", "board_header_numbers");
 
         final var board = data.replaceAll("(?s).*?1│|│.{1,3}\\d│|│.*", "");
         final var cellsCount = SIZE * SIZE;
@@ -34,10 +40,9 @@ public class GameStep {
         Assert.that(noNeighbors.test('x', '/'), "impossible_slash_x");
         Assert.that(noNeighbors.test('*', '/'), "impossible_slash_asterisk");
 
-        final var prompt = lines[lines.length - 1];
-        Assert.that(board.indexOf('x') == -1 || prompt.contains("failed"), "no_failed_and_x");
+        Assert.that(board.indexOf('x') == -1 || message.contains("failed"), "no_failed_and_x");
 
-        return new GameStep(board, prompt);
+        return new GameStep(board, message);
     }
 
     private final String message;

@@ -14,14 +14,14 @@ public class MyTest extends StageTest {
     private static final String ONE_MINE = "1";
 
     @DynamicTest
-    CheckResult FirstQuestionShouldAskMineCount() {
+    CheckResult firstQuestionShouldAskMineCount() {
         final var program = new TestedProgram();
         Assert.contains(program.start(), "how many mines", "first_question");
         return CheckResult.correct();
     }
 
     @DynamicTest(repeat = 10)
-    CheckResult FirstFreeMoveShouldBySafe() {
+    CheckResult firstFreeMoveShouldBySafe() {
         final var program = new TestedProgram();
         program.start();
         program.execute(MINES_70);
