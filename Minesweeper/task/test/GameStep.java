@@ -5,6 +5,7 @@ import static java.util.stream.IntStream.range;
 
 public class GameStep {
     static final int SIZE = 9;
+    static final int CELLS_COUNT = SIZE * SIZE;
     private static final String EXPECTED_SYMBOLS = "[./*X1-9]*";
 
     private GameStep(String board, String message) {
@@ -68,5 +69,13 @@ public class GameStep {
 
     private static boolean inRange(final int x) {
         return x >= 0 && x < SIZE;
+    }
+
+    int countSymbol(final char symbol) {
+        return (int) board.chars().filter(c -> c == symbol).count();
+    }
+
+    static IntStream allIndexes() {
+        return range(0, CELLS_COUNT);
     }
 }

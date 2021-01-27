@@ -1,3 +1,4 @@
+import org.hyperskill.hstest.exception.outcomes.OutcomeError;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 
 import java.util.ResourceBundle;
@@ -59,5 +60,9 @@ public class Assert {
                     + "\nYou program output:\n" + output;
             throw new WrongAnswer(feedback);
         }
+    }
+
+    static OutcomeError error(final String errorMessage, final Object... args) {
+        return new WrongAnswer(format(messages.getString(errorMessage), args));
     }
 }
