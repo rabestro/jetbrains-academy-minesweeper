@@ -46,7 +46,7 @@ public class MyTest extends StageTest {
             Assert.that(asterisk == minesCount || unexplored == minesCount, "dot_not_equals_mines");
         } else if (step.isFailed()) {
             final int xCount = step.count('x');
-            Assert.that(xCount == minesCount, "x_not_equals_mines", minesCount, xCount);
+            Assert.that(xCount == minesCount, "mines_not_equals_x", minesCount, xCount);
         } else {
             Assert.error("unexpected_error");
         }
