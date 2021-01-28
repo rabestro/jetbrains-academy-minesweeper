@@ -4,9 +4,9 @@ import java.util.stream.IntStream;
 import static java.util.stream.IntStream.range;
 
 public class GameStep {
+    private static final String EXPECTED_SYMBOLS = "[./*x1-9]*";
     static final int SIZE = 9;
     static final int CELLS_COUNT = SIZE * SIZE;
-    private static final String EXPECTED_SYMBOLS = "[./*X1-9]*";
 
     private GameStep(String board, String message) {
         this.message = message;
@@ -19,9 +19,12 @@ public class GameStep {
                 .replace("-", "—");
 
         final var lines = data.lines().toArray(String[]::new);
+        Assert.that(lines.length > 0, "no_output_found", lines.length);
+        final var message = lines[lines.length - 1];
+        // TODO check the error message: There is a number here!
+
         Assert.that(lines.length >= 13, "less_then_13_lines", lines.length);
 
-        final var message = lines[lines.length - 1];
         Assert.find(message,"failed|congratulations|unset mines", "no_last_message");
 
         Assert.contains(data, "│123456789│", "board_header_numbers");
@@ -58,6 +61,23 @@ public class GameStep {
 
     boolean isPlaying() {
         return message.contains("unset mines");
+    }
+
+    boolean isKnowsMines(final int index) {
+        return isNumber(index) &&
+                getNumber(index) == neighbors(index).filter(this::isUnexplored).count();
+    }
+
+    boolean isUnexplored(final int index) {
+        return board.charAt(index) == '.' || board.charAt(index) == '*';
+    }
+
+    int getNumber(final int index) {
+        return isNumber(index) ? Character.digit(board.charAt(index), 10) : -1;
+    }
+
+    boolean isNumber(final int index) {
+        return '0' < board.charAt(index) && board.charAt(index) <= '9';
     }
 
     private static IntStream neighbors(final int index) {

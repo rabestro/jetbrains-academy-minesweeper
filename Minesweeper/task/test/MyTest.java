@@ -38,13 +38,6 @@ public class MyTest extends StageTest {
         program.start();
         program.execute(ONE_MINE);
 
-        final var initialBoard = GameStep.parse(program.execute(getRandomFreeMove()));
-
-        if (initialBoard.isWin()) {
-            return CheckResult.correct();
-        }
-        Assert.that(initialBoard.isPlaying(), "first_free_move");
-
         final IntPredicate isMineFound = index -> {
             var game = GameStep.parse(program.execute(toMove(index, true)));
             Assert.that(game.countSymbol('*') == 1, "expect_one_asterisk");
@@ -57,6 +50,15 @@ public class MyTest extends StageTest {
             Assert.that(game.isPlaying(), "expected_playing");
             return false;
         };
+
+        Assert.that(GameStep.allIndexes().noneMatch(isMineFound), "no_mines_before_free_move");
+
+        final var initialBoard = GameStep.parse(program.execute(getRandomFreeMove()));
+
+        if (initialBoard.isWin()) {
+            return CheckResult.correct();
+        }
+        Assert.that(initialBoard.isPlaying(), "first_free_move");
 
         GameStep.allIndexes()
                 .filter(initialBoard::isDot)
