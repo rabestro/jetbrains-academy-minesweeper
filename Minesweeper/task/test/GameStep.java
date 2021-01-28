@@ -70,8 +70,8 @@ public class GameStep {
         if (wrongNumber.isPresent()) {
             final var index = wrongNumber.getAsInt();
             final var number = getNumber(index);
-            final var unexplored = neighbors(index).filter(this::isUnexplored).count();
-            throw Assert.error("wrong_number", number, unexplored);
+            final var mines = neighbors(index).filter(checkCells).count();
+            throw Assert.error(isFailed() ? "wrong_number_failed" : "wrong_number_playing", number, mines);
         }
     }
 
