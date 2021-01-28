@@ -1,6 +1,9 @@
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.IntStream.range;
 
 public class GameStep {
@@ -24,11 +27,13 @@ public class GameStep {
         final var lines = data.lines().toArray(String[]::new);
         Assert.that(lines.length > 0, "no_output_found", lines.length);
         final var message = lines[lines.length - 1];
-        // TODO check the error message: There is a number here!
-
+        if (lines.length < 3) {
+            // Possible error message like: There is a number here!
+            return new GameStep("", message);
+        }
         Assert.that(lines.length >= 13, "less_then_13_lines", lines.length);
 
-        Assert.find(message,"failed|congratulations|unset mines", "no_last_message");
+        Assert.find(message, "failed|congratulations|unset mines", "no_last_message");
 
         Assert.contains(data, "│123456789│", "board_header_numbers");
 
@@ -51,6 +56,10 @@ public class GameStep {
         return new GameStep(board, message);
     }
 
+    boolean isError() {
+        return board.isEmpty();
+    }
+
     boolean isFailed() {
         return message.contains("failed");
     }
@@ -68,16 +77,35 @@ public class GameStep {
                 getNumber(index) == neighbors(index).filter(this::isUnexplored).count();
     }
 
+    boolean isDot(int index) {
+        return board.charAt(index) == '.';
+    }
+
     boolean isUnexplored(final int index) {
         return board.charAt(index) == '.' || board.charAt(index) == '*';
+    }
+
+    boolean isNumber(final int index) {
+        return '0' < board.charAt(index) && board.charAt(index) <= '9';
     }
 
     int getNumber(final int index) {
         return isNumber(index) ? Character.digit(board.charAt(index), 10) : -1;
     }
 
-    boolean isNumber(final int index) {
-        return '0' < board.charAt(index) && board.charAt(index) <= '9';
+    int count(final char symbol) {
+        return (int) board.chars().filter(c -> c == symbol).count();
+    }
+
+    int getRandomFreeIndex() {
+        final var freeCells = freeIndexes()
+                .boxed().collect(toCollection(LinkedList::new));
+        Collections.shuffle(freeCells);
+        return freeCells.getFirst();
+    }
+
+    IntStream freeIndexes() {
+        return range(0, CELLS_COUNT).filter(this::isDot);
     }
 
     private static IntStream neighbors(final int index) {
@@ -96,15 +124,4 @@ public class GameStep {
         return x >= 0 && x < SIZE;
     }
 
-    int countSymbol(final char symbol) {
-        return (int) board.chars().filter(c -> c == symbol).count();
-    }
-
-    static IntStream allIndexes() {
-        return range(0, CELLS_COUNT);
-    }
-
-    boolean isDot(int index) {
-        return board.charAt(index) == '.';
-    }
 }
