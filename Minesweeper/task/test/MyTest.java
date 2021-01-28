@@ -41,6 +41,8 @@ public class MyTest extends StageTest {
 
     private static CheckResult checkFinalBoard(final GameStep step, final int minesCount) {
         if (step.isWin()) {
+            final var asteriks = step.count('*');
+            final var unexplored = step.count('.') + asteriks;
             Assert.that(step.count('*') == minesCount || step.count('.') == minesCount, "dot_not_equals_mines");
         } else if (step.isFailed()) {
             final int xCount = step.count('x');
