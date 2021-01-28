@@ -62,7 +62,7 @@ public class GameStep {
     private void checkNumbers() {
         final IntPredicate checkCells =  isFailed() ? i -> board.charAt(i) == 'x' : this::isUnexplored;
 
-        final var wrongNumber = range(0, SIZE * SIZE)
+        final var wrongNumber = range(0, CELLS_COUNT)
                 .filter(this::isNumber)
                 .filter(index-> this.getNumber(index) > neighbors(index).filter(checkCells).count())
                 .findAny();
