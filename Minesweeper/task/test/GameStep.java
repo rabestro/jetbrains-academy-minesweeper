@@ -72,7 +72,11 @@ public class GameStep {
         return message.contains("unset mines");
     }
 
-    boolean isKnowsMines(final int index) {
+    boolean isSureMine(final int index) {
+        return neighbors(index).filter(this::isKnowsMines).findFirst().isPresent();
+    }
+
+    private boolean isKnowsMines(final int index) {
         return isNumber(index) &&
                 getNumber(index) == neighbors(index).filter(this::isUnexplored).count();
     }
