@@ -1,6 +1,7 @@
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.function.BiPredicate;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -50,10 +51,28 @@ public class GameStep {
         Assert.that(noNeighbors.test('.', '/'), "impossible_slash_dot");
         Assert.that(noNeighbors.test('x', '/'), "impossible_slash_x");
         Assert.that(noNeighbors.test('*', '/'), "impossible_slash_asterisk");
-
         Assert.that(board.indexOf('x') == -1 || message.contains("failed"), "no_failed_and_x");
 
-        return new GameStep(board, message);
+        final var gameStep = new GameStep(board, message);
+        gameStep.checkNumbers();
+
+        return gameStep;
+    }
+
+    private void checkNumbers() {
+        final IntPredicate checkCells =  isFailed() ? i -> board.charAt(i) == 'x' : this::isUnexplored;
+
+        final var wrongNumber = range(0, SIZE * SIZE)
+                .filter(this::isNumber)
+                .filter(index-> this.getNumber(index) > neighbors(index).filter(checkCells).count())
+                .findAny();
+
+        if (wrongNumber.isPresent()) {
+            final var index = wrongNumber.getAsInt();
+            final var number = getNumber(index);
+            final var unexplored = neighbors(index).filter(this::isUnexplored).count();
+            throw Assert.error("wrong_number", number, unexplored);
+        }
     }
 
     boolean isError() {

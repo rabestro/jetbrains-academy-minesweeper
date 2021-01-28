@@ -43,14 +43,29 @@ public class MyTest extends StageTest {
         if (step.isWin()) {
             final var asterisk = step.count('*');
             final var unexplored = step.count('.') + asterisk;
-            Assert.that(asterisk == minesCount || unexplored == minesCount, "dot_not_equals_mines");
+            Assert.that(asterisk == minesCount || unexplored == minesCount, "not_every_mine_found");
         } else if (step.isFailed()) {
             final int xCount = step.count('x');
             Assert.that(xCount == minesCount, "mines_not_equals_x", minesCount, xCount);
         } else {
-            Assert.error("unexpected_error");
+            throw Assert.error("unexpected_error");
         }
         return CheckResult.correct();
+    }
+
+    private static IntPredicate isOneMineFound(final TestedProgram program) {
+        return index -> {
+            var game = GameStep.parse(program.execute(toMove(index, MARK_MINE)));
+            Assert.that(game.count('*') == 1, "expect_one_asterisk");
+            if (game.isWin()) {
+                return true;
+            }
+            Assert.that(game.isPlaying(), "no_failed_after_mark");
+            game = GameStep.parse(program.execute(toMove(index, MARK_MINE)));
+            Assert.that(game.count('*') == 0, "expect_no_asterisk");
+            Assert.that(game.isPlaying(), "expected_playing");
+            return false;
+        };
     }
 
     @DynamicTest(order = 0)
@@ -77,7 +92,7 @@ public class MyTest extends StageTest {
         final var game = new TestedProgram();
         game.start();
         game.execute(ONE_MINE);
-        Assert.that(allIndexes().noneMatch(isMineFound(game)), "no_mines_before_free_move");
+        Assert.that(allIndexes().noneMatch(isOneMineFound(game)), "no_mines_before_free_move");
         return CheckResult.correct();
     }
 
@@ -96,26 +111,11 @@ public class MyTest extends StageTest {
 
         firstStep
                 .freeIndexes()
-                .filter(isMineFound(game))
+                .filter(isOneMineFound(game))
                 .findFirst()
                 .orElseThrow(() -> Assert.error("no_mine_found"));
 
         return CheckResult.correct();
-    }
-
-    IntPredicate isMineFound(final TestedProgram program) {
-        return index -> {
-            var game = GameStep.parse(program.execute(toMove(index, MARK_MINE)));
-            Assert.that(game.count('*') == 1, "expect_one_asterisk");
-            if (game.isWin()) {
-                return true;
-            }
-            Assert.that(game.isPlaying(), "no_failed_after_mark");
-            game = GameStep.parse(program.execute(toMove(index, MARK_MINE)));
-            Assert.that(game.count('*') == 0, "expect_no_asterisk");
-            Assert.that(game.isPlaying(), "expected_playing");
-            return false;
-        };
     }
 
     @DynamicTest(data = "mines", repeat = 2, order = 4)
