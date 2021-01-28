@@ -43,7 +43,8 @@ public class MyTest extends StageTest {
         if (step.isWin()) {
             Assert.that(step.count('*') == minesCount || step.count('.') == minesCount, "dot_not_equals_mines");
         } else if (step.isFailed()) {
-            Assert.that(step.count('x') == minesCount, "x_not_equals_mines");
+            final int xCount = step.count('x');
+            Assert.that(xCount == minesCount, "x_not_equals_mines", minesCount, xCount);
         } else {
             Assert.error("unexpected_error");
         }
