@@ -8,6 +8,9 @@ public class GameStep {
     static final int SIZE = 9;
     static final int CELLS_COUNT = SIZE * SIZE;
 
+    private final String message;
+    private final String board;
+
     private GameStep(String board, String message) {
         this.message = message;
         this.board = board;
@@ -47,9 +50,6 @@ public class GameStep {
 
         return new GameStep(board, message);
     }
-
-    private final String message;
-    private final String board;
 
     boolean isFailed() {
         return message.contains("failed");
