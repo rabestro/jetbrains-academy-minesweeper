@@ -21,10 +21,15 @@ public class MinesweeperTest extends StageTest {
             toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
 
     private static final Function<GameStep, String> REGULAR_PLAYER = step -> {
-        final var mineIndex = step.freeIndexes().filter(step::isSureMine).findFirst();
-        return mineIndex.isPresent()
-                ? toMove(mineIndex.getAsInt(), MARK_MINE)
-                : toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
+        final var mineIndex = step.freeIndexes().filter(step::isSureMine).findAny();
+        if (mineIndex.isPresent()) {
+            return toMove(mineIndex.getAsInt(), MARK_MINE);
+        }
+        final var freeIndex = step.freeIndexes().filter(step::isSureFree).findAny();
+        if (freeIndex.isPresent()) {
+            return toMove(freeIndex.getAsInt(), SUGGEST_FREE);
+        }
+        return toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
     };
 
     int[] mines = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40, 50, 60, 70};

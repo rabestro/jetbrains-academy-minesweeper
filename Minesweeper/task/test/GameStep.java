@@ -95,11 +95,11 @@ public class GameStep {
         return neighbors(index).filter(this::isAllUnexploredMines).findFirst().isPresent();
     }
 
-    boolean isSurFree(final int index) {
+    boolean isSureFree(final int index) {
         return neighbors(index).filter(this::isAllMineAroundMarked).findFirst().isPresent();
     }
 
-    boolean isAllMineAroundMarked(final int index) {
+    private boolean isAllMineAroundMarked(final int index) {
         return getNumber(index) == neighbors(index).filter(this::isMarked).count();
     }
 
