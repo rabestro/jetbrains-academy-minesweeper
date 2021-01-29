@@ -123,7 +123,7 @@ public class GameStep {
     int getRandomFreeIndex() {
         final var freeCells = freeIndexes()
                 .boxed().collect(toCollection(LinkedList::new));
-        Assert.that(freeCells.size() > 0, "");
+        Assert.that(freeCells.size() > 0, "no_dots");
         Collections.shuffle(freeCells);
         return freeCells.getFirst();
     }
