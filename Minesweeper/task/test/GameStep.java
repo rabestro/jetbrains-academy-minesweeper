@@ -92,16 +92,27 @@ public class GameStep {
     }
 
     boolean isSureMine(final int index) {
-        return neighbors(index).filter(this::isKnowsMines).findFirst().isPresent();
+        return neighbors(index).filter(this::isAllUnexploredMines).findFirst().isPresent();
     }
 
-    private boolean isKnowsMines(final int index) {
-        return isNumber(index) &&
-                getNumber(index) == neighbors(index).filter(this::isUnexplored).count();
+    boolean isSurFree(final int index) {
+        return neighbors(index).filter(this::isAllMineAroundMarked).findFirst().isPresent();
     }
 
-    boolean isDot(int index) {
+    boolean isAllMineAroundMarked(final int index) {
+        return getNumber(index) == neighbors(index).filter(this::isMarked).count();
+    }
+
+    private boolean isAllUnexploredMines(final int index) {
+        return getNumber(index) == neighbors(index).filter(this::isUnexplored).count();
+    }
+
+    boolean isDot(final int index) {
         return board.charAt(index) == '.';
+    }
+
+    boolean isMarked(final int index) {
+        return board.charAt(index) == '*';
     }
 
     boolean isUnexplored(final int index) {
@@ -112,7 +123,7 @@ public class GameStep {
         return '0' < board.charAt(index) && board.charAt(index) <= '9';
     }
 
-    int getNumber(final int index) {
+    private int getNumber(final int index) {
         return isNumber(index) ? Character.digit(board.charAt(index), 10) : -1;
     }
 

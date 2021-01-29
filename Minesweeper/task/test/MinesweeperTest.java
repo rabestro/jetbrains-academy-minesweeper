@@ -17,15 +17,15 @@ public class MinesweeperTest extends StageTest {
     private static final boolean SUGGEST_FREE = false;
     private static final boolean MARK_MINE = true;
 
+    private static final Function<GameStep, String> RECREATIONAL_PLAYER = step ->
+            toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
+
     private static final Function<GameStep, String> REGULAR_PLAYER = step -> {
         final var mineIndex = step.freeIndexes().filter(step::isSureMine).findFirst();
         return mineIndex.isPresent()
                 ? toMove(mineIndex.getAsInt(), MARK_MINE)
                 : toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
     };
-
-    private static final Function<GameStep, String> RECREATIONAL_PLAYER =
-            step -> toMove(step.getRandomFreeIndex(), SUGGEST_FREE);
 
     int[] mines = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40, 50, 60, 70};
 
